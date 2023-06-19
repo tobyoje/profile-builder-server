@@ -17,9 +17,10 @@ exports.up = function (knex) {
       table.increments("id").primary();
       table.string("page_title").notNullable();
       table.string("full_name").notNullable();
-      table.string("biography", 1000).notNullable();
-      table.string("profile_image").notNullable();
-      table.string("hero_image").notNullable();
+      table.string("biography", 1000);
+      table.string("page_link", 1000);
+      table.string("profile_image");
+      table.string("hero_image");
       table
         .integer("user_id")
         .unsigned()
@@ -53,8 +54,66 @@ exports.up = function (knex) {
     })
     .createTable("links", (table) => {
       table.increments("id").primary();
-      table.string("link").notNullable();
-      table.string("title").notNullable();
+      table.string("link1");
+      table.string("title1");
+      table.string("link2");
+      table.string("title2");
+      table.string("link3");
+      table.string("title3");
+      table.string("link4");
+      table.string("title4");
+      table
+        .integer("profile_id")
+        .unsigned()
+        .references("profile.id")
+        .onUpdate("CASCADE")
+        .onDelete("CASCADE");
+      table.timestamp("created_at").defaultTo(knex.fn.now());
+      table
+        .timestamp("updated_at")
+        .defaultTo(knex.raw("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"));
+    })
+    .createTable("imagecards", (table) => {
+      table.increments("id").primary();
+      table.string("link1");
+      table.string("title1");
+      table.string("image1");
+      table.string("link2");
+      table.string("title2");
+      table.string("image2");
+      table.string("link3");
+      table.string("title3");
+      table.string("image3");
+      table.string("link4");
+      table.string("title4");
+      table.string("image4");
+      table.string("link5");
+      table.string("title5");
+      table.string("image5");
+      table.string("link6");
+      table.string("title6");
+      table.string("image6");
+      table
+        .integer("profile_id")
+        .unsigned()
+        .references("profile.id")
+        .onUpdate("CASCADE")
+        .onDelete("CASCADE");
+      table.timestamp("created_at").defaultTo(knex.fn.now());
+      table
+        .timestamp("updated_at")
+        .defaultTo(knex.raw("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"));
+    })
+    .createTable("gallery", (table) => {
+      table.increments("id").primary();
+      table.string("image1");
+      table.string("image2");
+      table.string("image3");
+      table.string("image4");
+      table.string("image5");
+      table.string("image6");
+      table.string("image7");
+      table.string("image8");
       table
         .integer("profile_id")
         .unsigned()
@@ -91,6 +150,8 @@ exports.up = function (knex) {
 exports.down = function (knex) {
   return knex.schema
     .dropTable("theme")
+    .dropTable("gallery")
+    .dropTable("imagecards")
     .dropTable("links")
     .dropTable("socials")
     .dropTable("profile")

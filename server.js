@@ -9,9 +9,10 @@ app.use(express.json());
 const PORT = process.env.PORT;
 
 const usersRoutes = require("./routes/user-routes");
-app.use("/user", usersRoutes);
+app.use("/api/user", usersRoutes);
 
-
+const profileRoutes = require("./routes/profile-routes");
+app.use("/profile", profileRoutes);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT} `);
