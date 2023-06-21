@@ -34,13 +34,13 @@ exports.up = function (knex) {
     })
     .createTable("socials", (table) => {
       table.increments("id").primary();
-      table.string("twitter").notNullable();
-      table.string("facebook").notNullable();
-      table.string("linkedin").notNullable();
-      table.string("instagram").notNullable();
-      table.string("youtube").notNullable();
-      table.string("github").notNullable();
-      table.string("email").notNullable();
+      table.string("twitter");
+      table.string("facebook");
+      table.string("linkedin");
+      table.string("instagram");
+      table.string("youtube");
+      table.string("github");
+      table.string("email");
       table
         .integer("profile_id")
         .unsigned()
@@ -54,14 +54,14 @@ exports.up = function (knex) {
     })
     .createTable("links", (table) => {
       table.increments("id").primary();
-      table.string("link1");
-      table.string("title1");
-      table.string("link2");
-      table.string("title2");
-      table.string("link3");
-      table.string("title3");
-      table.string("link4");
-      table.string("title4");
+      table.string("ext_link1");
+      table.string("ext_title1");
+      table.string("ext_link2");
+      table.string("ext_title2");
+      table.string("ext_link3");
+      table.string("ext_title3");
+      table.string("ext_link4");
+      table.string("ext_title4");
       table
         .integer("profile_id")
         .unsigned()
@@ -75,24 +75,24 @@ exports.up = function (knex) {
     })
     .createTable("imagecards", (table) => {
       table.increments("id").primary();
-      table.string("link1");
-      table.string("title1");
-      table.string("image1");
-      table.string("link2");
-      table.string("title2");
-      table.string("image2");
-      table.string("link3");
-      table.string("title3");
-      table.string("image3");
-      table.string("link4");
-      table.string("title4");
-      table.string("image4");
-      table.string("link5");
-      table.string("title5");
-      table.string("image5");
-      table.string("link6");
-      table.string("title6");
-      table.string("image6");
+      table.string("ic_link1");
+      table.string("ic_title1");
+      table.string("ic_image1");
+      table.string("ic_link2");
+      table.string("ic_title2");
+      table.string("ic_image2");
+      table.string("ic_link3");
+      table.string("ic_title3");
+      table.string("ic_image3");
+      table.string("ic_link4");
+      table.string("ic_title4");
+      table.string("ic_image4");
+      table.string("ic_link5");
+      table.string("ic_title5");
+      table.string("ic_image5");
+      table.string("ic_link6");
+      table.string("ic_title6");
+      table.string("ic_image6");
       table
         .integer("profile_id")
         .unsigned()
@@ -106,14 +106,14 @@ exports.up = function (knex) {
     })
     .createTable("gallery", (table) => {
       table.increments("id").primary();
-      table.string("image1");
-      table.string("image2");
-      table.string("image3");
-      table.string("image4");
-      table.string("image5");
-      table.string("image6");
-      table.string("image7");
-      table.string("image8");
+      table.string("g_image1");
+      table.string("g_image2");
+      table.string("g_image3");
+      table.string("g_image4");
+      table.string("g_image5");
+      table.string("g_image6");
+      table.string("g_image7");
+      table.string("g_image8");
       table
         .integer("profile_id")
         .unsigned()

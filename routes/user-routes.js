@@ -15,7 +15,14 @@ router.route("/current").get(authenticate, userController.findUser);
 router
   .route("/setup")
   .post(authenticate, userController.setupBasic)
+  .get(userController.getBasicData)
   .put(authenticate, userController.setupImages);
+
+router.route("/:pageLink").get(userController.getProfile);
+
+router
+  .route("/edit/:pageLink")
+  .get(authenticate, userController.getProfileEdit);
 
 router.route("/socials").post(authenticate, userController.setupSocial);
 // .put(authenticate, userController.setupImages);

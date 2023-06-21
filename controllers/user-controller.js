@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const authenticate = require("../middleware/authenticate");
 
-// Post request to get all users
+//  request to get all users
 const index = (req, res) => {
   knex("user")
     .then((data) => {
@@ -76,7 +76,7 @@ const login = async (req, res) => {
   );
 
   console.log(token);
-  res.json({ token });
+  res.json({ token, user_id: user.id });
 };
 
 // ## GET /api/user/current
@@ -89,6 +89,170 @@ const findUser = async (req, res) => {
   const user = await knex("user").where({ id: req.user.id }).first();
   // delete user.password;
   res.json(user);
+};
+
+//Get Profile by pageLink Params
+const getProfile = (req, res) => {
+  knex("profile")
+    .join("theme", "theme.profile_id", "profile.id")
+    .join("links", "links.profile_id", "profile.id")
+    .join("imagecards", "imagecards.profile_id", "profile.id")
+    .join("socials", "socials.profile_id", "profile.id")
+    .join("gallery", "gallery.profile_id", "profile.id")
+    .where({ page_link: req.params.pageLink })
+    .then((result) => {
+      if (result.length === 0) {
+        res
+          .status(404)
+          .json({ message: "Unable to find profile with this link." });
+      } else {
+        const profile = { ...result[0] };
+        const userID = profile.user_id;
+        knex("user")
+          .where({ id: userID })
+          .then((userResult) => {
+            const dataToSend = {
+              id: profile.id,
+              page_title: profile.page_title,
+              biography: profile.biography,
+              profile_image: profile.profile_image,
+              hero_image: profile.hero_image,
+              user_id: profile.user_id,
+              style: result[0].style,
+              color: result[0].color,
+              font: result[0].font,
+              ext_link1: result[0].ext_link1,
+              ext_title1: result[0].ext_title1,
+              ext_link2: result[0].ext_link2,
+              ext_title2: result[0].ext_title2,
+              ext_link3: result[0].ext_link3,
+              ext_title3: result[0].ext_title3,
+              ext_link4: result[0].ext_link4,
+              ext_title4: result[0].ext_title4,
+              ic_link1: result[0].ic_link1,
+              ic_title1: result[0].ic_title1,
+              ic_image1: result[0].ic_image1,
+              ic_link2: result[0].ic_link2,
+              ic_title2: result[0].ic_title2,
+              ic_image2: result[0].ic_image2,
+              ic_link3: result[0].ic_link3,
+              ic_title3: result[0].ic_title3,
+              ic_image3: result[0].ic_image3,
+              ic_link4: result[0].ic_link4,
+              ic_title4: result[0].ic_title4,
+              ic_image4: result[0].ic_image4,
+              ic_link5: result[0].ic_link5,
+              ic_title5: result[0].ic_title5,
+              ic_image5: result[0].ic_image5,
+              ic_link6: result[0].ic_link6,
+              ic_title6: result[0].ic_title6,
+              ic_image6: result[0].ic_image6,
+              twitter: result[0].twitter,
+              facebook: result[0].facebook,
+              linkedin: result[0].linkedin,
+              instagram: result[0].instagram,
+              youtube: result[0].youtube,
+              github: result[0].github,
+              email: result[0].email,
+              g_image1: result[0].g_image1,
+              g_image2: result[0].g_image2,
+              g_image3: result[0].g_image3,
+              g_image4: result[0].g_image4,
+              g_image5: result[0].g_image5,
+              g_image6: result[0].g_image6,
+              g_image7: result[0].g_image7,
+              g_image8: result[0].g_image8,
+            };
+            res.status(200).send(dataToSend);
+          });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ message: "Internal server error." });
+    });
+};
+
+//Get request for edit
+const getProfileEdit = (req, res) => {
+  knex("profile")
+    .join("theme", "theme.profile_id", "profile.id")
+    .join("links", "links.profile_id", "profile.id")
+    .join("imagecards", "imagecards.profile_id", "profile.id")
+    .join("socials", "socials.profile_id", "profile.id")
+    .join("gallery", "gallery.profile_id", "profile.id")
+    .where({ page_link: req.params.pageLink })
+    .then((result) => {
+      if (result.length === 0) {
+        res
+          .status(404)
+          .json({ message: "Unable to find profile with this link." });
+      } else {
+        const profile = { ...result[0] };
+        const userID = profile.user_id;
+        knex("user")
+          .where({ id: userID })
+          .then((userResult) => {
+            const dataToSend = {
+              id: profile.id,
+              page_title: profile.page_title,
+              biography: profile.biography,
+              profile_image: profile.profile_image,
+              hero_image: profile.hero_image,
+              user_id: profile.user_id,
+              style: result[0].style,
+              color: result[0].color,
+              font: result[0].font,
+              ext_link1: result[0].ext_link1,
+              ext_title1: result[0].ext_title1,
+              ext_link2: result[0].ext_link2,
+              ext_title2: result[0].ext_title2,
+              ext_link3: result[0].ext_link3,
+              ext_title3: result[0].ext_title3,
+              ext_link4: result[0].ext_link4,
+              ext_title4: result[0].ext_title4,
+              ic_link1: result[0].ic_link1,
+              ic_title1: result[0].ic_title1,
+              ic_image1: result[0].ic_image1,
+              ic_link2: result[0].ic_link2,
+              ic_title2: result[0].ic_title2,
+              ic_image2: result[0].ic_image2,
+              ic_link3: result[0].ic_link3,
+              ic_title3: result[0].ic_title3,
+              ic_image3: result[0].ic_image3,
+              ic_link4: result[0].ic_link4,
+              ic_title4: result[0].ic_title4,
+              ic_image4: result[0].ic_image4,
+              ic_link5: result[0].ic_link5,
+              ic_title5: result[0].ic_title5,
+              ic_image5: result[0].ic_image5,
+              ic_link6: result[0].ic_link6,
+              ic_title6: result[0].ic_title6,
+              ic_image6: result[0].ic_image6,
+              twitter: result[0].twitter,
+              facebook: result[0].facebook,
+              linkedin: result[0].linkedin,
+              instagram: result[0].instagram,
+              youtube: result[0].youtube,
+              github: result[0].github,
+              email: result[0].email,
+              g_image1: result[0].g_image1,
+              g_image2: result[0].g_image2,
+              g_image3: result[0].g_image3,
+              g_image4: result[0].g_image4,
+              g_image5: result[0].g_image5,
+              g_image6: result[0].g_image6,
+              g_image7: result[0].g_image7,
+              g_image8: result[0].g_image8,
+            };
+            res.status(200).send(dataToSend);
+          });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ message: "Internal server error." });
+    });
 };
 
 // ## POST /api/user/setup
@@ -135,6 +299,14 @@ const setupBasic = async (req, res) => {
     console.log(error);
     res.status(400).send("Unable to create basic info for the user");
   }
+};
+
+const getBasicData = (req, res) => {
+  knex("profile")
+    .then((data) => {
+      res.status(200).json(data);
+    })
+    .catch((err) => res.status(400).send(`Error retrieving users: ${err}`));
 };
 
 const setupImages = async (req, res) => {
@@ -222,8 +394,16 @@ const setupSocial = async (req, res) => {
 
 const setupLinks = async (req, res) => {
   try {
-    const { link1, title1, link2, title2, link3, title3, link4, title4 } =
-      req.body;
+    const {
+      ext_link1,
+      ext_title1,
+      ext_link2,
+      ext_title2,
+      ext_link3,
+      ext_title3,
+      ext_link4,
+      ext_title4,
+    } = req.body;
     console.log(req.body);
 
     const existingUser = await knex("user").where({ id: req.user.id }).first();
@@ -243,14 +423,14 @@ const setupLinks = async (req, res) => {
     console.log(existingProfile);
 
     const newLinks = {
-      link1,
-      title1,
-      link2,
-      title2,
-      link3,
-      title3,
-      link4,
-      title4,
+      ext_link1,
+      ext_title1,
+      ext_link2,
+      ext_title2,
+      ext_link3,
+      ext_title3,
+      ext_link4,
+      ext_title4,
       profile_id: existingProfile.id,
     };
 
@@ -267,24 +447,24 @@ const setupLinks = async (req, res) => {
 const setupImageCards = async (req, res) => {
   try {
     const {
-      link1,
-      title1,
-      image1,
-      link2,
-      title2,
-      image2,
-      link3,
-      title3,
-      image3,
-      link4,
-      title4,
-      image4,
-      link5,
-      title5,
-      image5,
-      link6,
-      title6,
-      image6,
+      ic_link1,
+      ic_title1,
+      ic_image1,
+      ic_link2,
+      ic_title2,
+      ic_image2,
+      ic_link3,
+      ic_title3,
+      ic_image3,
+      ic_link4,
+      ic_title4,
+      ic_image4,
+      ic_link5,
+      ic_title5,
+      ic_image5,
+      ic_link6,
+      ic_title6,
+      ic_image6,
     } = req.body;
     console.log(req.body);
 
@@ -305,24 +485,24 @@ const setupImageCards = async (req, res) => {
     console.log(existingProfile);
 
     const newImageCards = {
-      link1,
-      title1,
-      image1,
-      link2,
-      title2,
-      image2,
-      link3,
-      title3,
-      image3,
-      link4,
-      title4,
-      image4,
-      link5,
-      title5,
-      image5,
-      link6,
-      title6,
-      image6,
+      ic_link1,
+      ic_title1,
+      ic_image1,
+      ic_link2,
+      ic_title2,
+      ic_image2,
+      ic_link3,
+      ic_title3,
+      ic_image3,
+      ic_link4,
+      ic_title4,
+      ic_image4,
+      ic_link5,
+      ic_title5,
+      ic_image5,
+      ic_link6,
+      ic_title6,
+      ic_image6,
       profile_id: existingProfile.id,
     };
 
@@ -338,7 +518,8 @@ const setupImageCards = async (req, res) => {
 
 const setupGalleryImages = async (req, res) => {
   try {
-    const { image1, image2, image3, image4, image5, image6 } = req.body;
+    const { g_image1, g_image2, g_image3, g_image4, g_image5, g_image6 } =
+      req.body;
     console.log(req.body);
 
     const existingUser = await knex("user").where({ id: req.user.id }).first();
@@ -358,12 +539,12 @@ const setupGalleryImages = async (req, res) => {
     console.log(existingProfile);
 
     const newGalleryImages = {
-      image1,
-      image2,
-      image3,
-      image4,
-      image5,
-      image6,
+      g_image1,
+      g_image2,
+      g_image3,
+      g_image4,
+      g_image5,
+      g_image6,
       profile_id: existingProfile.id,
     };
 
@@ -420,7 +601,10 @@ module.exports = {
   create,
   login,
   findUser,
+  getProfile,
+  getProfileEdit,
   setupBasic,
+  getBasicData,
   setupImages,
   setupSocial,
   setupLinks,
