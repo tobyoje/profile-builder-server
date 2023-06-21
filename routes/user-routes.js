@@ -32,4 +32,6 @@ router.route("/imagecards").post(authenticate, userController.setupImageCards);
 router.route("/gallery").post(authenticate, userController.setupGalleryImages);
 router.route("/theme").post(authenticate, userController.setupTheme);
 
+router.route("/image-upload").post(authenticate, userController.imageUpload);
+
 module.exports = router;

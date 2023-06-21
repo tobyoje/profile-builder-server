@@ -5,6 +5,7 @@ const express = require("express");
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use("/images", express.static("./files"));
 
 const PORT = process.env.PORT;
 
