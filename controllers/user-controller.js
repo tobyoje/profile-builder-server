@@ -57,7 +57,13 @@ const login = async (req, res) => {
   }
 
   // Find the user
+  const userAndProfile = await knex("user")
+    .where({ email })
+    .join("profile", "profile.user_id", "user.id")
+    .first();
+
   const user = await knex("user").where({ email }).first();
+
   if (!user) {
     return res.status(400).send("Invalid email");
   }
@@ -76,7 +82,7 @@ const login = async (req, res) => {
   );
 
   console.log(token);
-  res.json({ token, user_id: user.id });
+  res.json({ token, user_id: user.id, page_link: userAndProfile.page_link });
 };
 
 // ## GET /api/user/current
@@ -113,7 +119,9 @@ const getProfile = (req, res) => {
           .then((userResult) => {
             const dataToSend = {
               id: profile.id,
+              full_name: profile.full_name,
               page_title: profile.page_title,
+              page_link: profile.page_link,
               biography: profile.biography,
               profile_image: profile.profile_image,
               hero_image: profile.hero_image,
@@ -174,6 +182,7 @@ const getProfile = (req, res) => {
 };
 
 //Get request for edit
+
 const getProfileEdit = (req, res) => {
   knex("profile")
     .join("theme", "theme.profile_id", "profile.id")
@@ -195,7 +204,9 @@ const getProfileEdit = (req, res) => {
           .then((userResult) => {
             const dataToSend = {
               id: profile.id,
+              full_name: profile.full_name,
               page_title: profile.page_title,
+              page_link: profile.page_link,
               biography: profile.biography,
               profile_image: profile.profile_image,
               hero_image: profile.hero_image,
@@ -298,6 +309,50 @@ const setupBasic = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(400).send("Unable to create basic info for the user");
+  }
+};
+
+const updateBasic = async (req, res) => {
+  // Grab the data that's been posted
+  const { page_title, full_name, page_link, biography } = req.body;
+
+  if (!page_title || !full_name || !page_link || !biography) {
+    return res
+      .status(400)
+      .send("Please provide required information in the request");
+  }
+
+  const newBasicInfo = {
+    page_title,
+    full_name,
+    page_link,
+    biography,
+  };
+  try {
+    const existingUser = await knex("user").where({ id: req.user.id }).first();
+    console.log(req.user);
+
+    if (!existingUser) {
+      return res.status(404).send("User not found");
+    }
+
+    const existingProfile = await knex("profile")
+      .where({ user_id: req.user.id })
+      .first();
+
+    if (existingProfile) {
+      await knex("profile")
+        .where({ user_id: req.user.id })
+        .update(newBasicInfo);
+    } else {
+      newBasicInfo.user_id = req.user.id;
+      await knex("profile").insert(newBasicInfo);
+    }
+
+    res.status(200).send("Basic Info updated successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Unable to update basic info for the user");
   }
 };
 
@@ -628,6 +683,7 @@ module.exports = {
   getProfile,
   getProfileEdit,
   setupBasic,
+  updateBasic,
   getBasicData,
   setupImages,
   setupSocial,
