@@ -18,14 +18,14 @@ router
   .get(userController.getBasicData)
   .put(authenticate, userController.setupImages);
 
-router.route("/:pageLink").get(userController.getProfile)
-.put(authenticate, userController.updateBasic);
+router
+  .route("/:pageLink")
+  .get(userController.getProfile)
+  .put(authenticate, userController.updateBasic);
 
 router
   .route("/edit/:pageLink")
-  .get(authenticate, userController.getProfileEdit)
-
-
+  .get(authenticate, userController.getProfileEdit);
 
 router.route("/socials").post(authenticate, userController.setupSocial);
 // .put(authenticate, userController.setupImages);

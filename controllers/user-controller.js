@@ -82,8 +82,21 @@ const login = async (req, res) => {
   );
 
   console.log(token);
-  res.json({ token, user_id: user.id, page_link: userAndProfile.page_link });
-};
+  console.log(userAndProfile);
+  if (userAndProfile && userAndProfile.page_link) {
+    res.json({ 
+      token, 
+      user_id: user.id, 
+      page_link: userAndProfile.page_link 
+    });
+  } else {
+    res.json({ 
+      token, 
+      user_id: user.id, 
+      page_link: null 
+    });
+  }
+  };
 
 // ## GET /api/user/current
 // -   Gets information about the currently logged in user.
