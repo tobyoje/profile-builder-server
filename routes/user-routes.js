@@ -24,6 +24,38 @@ router
   .put(authenticate, userController.updateBasic);
 
 router
+  .route("/profileimage/:pageLink")
+  .put(authenticate, userController.updateImages);
+
+
+  router
+  .route("/socials/:pageLink")
+  .put(authenticate, userController.updateSocials);
+
+
+  router
+  .route("/external-links/:pageLink")
+  .put(authenticate, userController.updateExternalLinks);
+
+  router
+  .route("/image-cards/:pageLink")
+  .put(authenticate, userController.updateImageCards);
+
+  router
+  .route("/gallery/:pageLink")
+  .put(authenticate, userController.updateGallery);
+
+
+  router
+  .route("/theme/:pageLink")
+  .put(authenticate, userController.updateTheme);
+
+
+
+
+
+
+router
   .route("/edit/:pageLink")
   .get(authenticate, userController.getProfileEdit);
 

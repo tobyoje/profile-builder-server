@@ -84,19 +84,19 @@ const login = async (req, res) => {
   console.log(token);
   console.log(userAndProfile);
   if (userAndProfile && userAndProfile.page_link) {
-    res.json({ 
-      token, 
-      user_id: user.id, 
-      page_link: userAndProfile.page_link 
+    res.json({
+      token,
+      user_id: user.id,
+      page_link: userAndProfile.page_link,
     });
   } else {
-    res.json({ 
-      token, 
-      user_id: user.id, 
-      page_link: null 
+    res.json({
+      token,
+      user_id: user.id,
+      page_link: null,
     });
   }
-  };
+};
 
 // ## GET /api/user/current
 // -   Gets information about the currently logged in user.
@@ -366,6 +366,305 @@ const updateBasic = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Unable to update basic info for the user");
+  }
+};
+
+const updateImages = async (req, res) => {
+  // Grab the data that's been posted
+  const { profile_image, hero_image } = req.body;
+
+  if (!profile_image || !hero_image) {
+    return res
+      .status(400)
+      .send("Please provide required information in the request");
+  }
+
+  const newBasicInfo = {
+    profile_image,
+    hero_image,
+  };
+  try {
+    const existingUser = await knex("user").where({ id: req.user.id }).first();
+    console.log(req.user);
+
+    if (!existingUser) {
+      return res.status(404).send("User not found");
+    }
+
+    const existingProfile = await knex("profile")
+      .where({ user_id: req.user.id })
+      .first();
+
+    if (existingProfile) {
+      await knex("profile")
+        .where({ user_id: req.user.id })
+        .update(newBasicInfo);
+    } else {
+      newBasicInfo.user_id = req.user.id;
+      await knex("profile").insert(newBasicInfo);
+    }
+
+    res.status(200).send("Basic Info updated successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Unable to update basic info for the user");
+  }
+};
+
+const updateSocials = async (req, res) => {
+  const { twitter, facebook, linkedin, instagram, youtube, github, email } =
+    req.body;
+
+  const updatedSocials = {
+    twitter,
+    facebook,
+    linkedin,
+    instagram,
+    youtube,
+    github,
+    email,
+  };
+
+  try {
+    const existingUser = await knex("user").where({ id: req.user.id }).first();
+
+    if (!existingUser) {
+      return res.status(404).send("User not found");
+    }
+
+    const existingProfile = await knex("profile")
+      .where({ user_id: req.user.id })
+      .first();
+
+    if (!existingProfile) {
+      return res.status(404).send("Profile not found");
+    }
+
+    const updatedRowCount = await knex("socials")
+      .where({ profile_id: existingProfile.id })
+      .update(updatedSocials);
+
+    if (updatedRowCount === 0) {
+      updatedSocials.profile_id = existingProfile.id;
+      await knex("socials").insert(updatedSocials);
+    }
+
+    res.status(200).send("Socials updated successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Unable to update socials");
+  }
+};
+
+const updateExternalLinks = async (req, res) => {
+  const {
+    ext_link1,
+    ext_title1,
+    ext_link2,
+    ext_title2,
+    ext_link3,
+    ext_title3,
+    ext_link4,
+    ext_title4,
+  } = req.body;
+
+  const updatedLinks = {
+    ext_link1,
+    ext_title1,
+    ext_link2,
+    ext_title2,
+    ext_link3,
+    ext_title3,
+    ext_link4,
+    ext_title4,
+  };
+
+  try {
+    const existingUser = await knex("user").where({ id: req.user.id }).first();
+
+    if (!existingUser) {
+      return res.status(404).send("User not found");
+    }
+
+    const existingProfile = await knex("profile")
+      .where({ user_id: req.user.id })
+      .first();
+
+    if (!existingProfile) {
+      return res.status(404).send("Profile not found");
+    }
+
+    const updatedRowCount = await knex("links")
+      .where({ profile_id: existingProfile.id })
+      .update(updatedLinks);
+
+    if (updatedRowCount === 0) {
+      updatedLinks.profile_id = existingProfile.id;
+      await knex("links").insert(updatedLinks);
+    }
+
+    res.status(200).send("External link updated successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Unable to update external links");
+  }
+};
+
+const updateImageCards = async (req, res) => {
+  const {
+    ic_link1,
+    ic_title1,
+    ic_image1,
+    ic_link2,
+    ic_title2,
+    ic_image2,
+    ic_link3,
+    ic_title3,
+    ic_image3,
+    ic_link4,
+    ic_title4,
+    ic_image4,
+    ic_link5,
+    ic_title5,
+    ic_image5,
+    ic_link6,
+    ic_title6,
+    ic_image6,
+  } = req.body;
+
+  const updatedImageCards = {
+    ic_link1,
+    ic_title1,
+    ic_image1,
+    ic_link2,
+    ic_title2,
+    ic_image2,
+    ic_link3,
+    ic_title3,
+    ic_image3,
+    ic_link4,
+    ic_title4,
+    ic_image4,
+    ic_link5,
+    ic_title5,
+    ic_image5,
+    ic_link6,
+    ic_title6,
+    ic_image6,
+  };
+
+  try {
+    const existingUser = await knex("user").where({ id: req.user.id }).first();
+
+    if (!existingUser) {
+      return res.status(404).send("User not found");
+    }
+
+    const existingProfile = await knex("profile")
+      .where({ user_id: req.user.id })
+      .first();
+
+    if (!existingProfile) {
+      return res.status(404).send("Profile not found");
+    }
+
+    const updatedRowCount = await knex("imagecards")
+      .where({ profile_id: existingProfile.id })
+      .update(updatedImageCards);
+
+    if (updatedRowCount === 0) {
+      updatedImageCards.profile_id = existingProfile.id;
+      await knex("imagecards").insert(updatedImageCards);
+    }
+
+    res.status(200).send("Image Cards  updated successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Unable to update Image Cards");
+  }
+};
+
+const updateGallery = async (req, res) => {
+  const { g_image1, g_image2, g_image3, g_image4, g_image5, g_image6 } =
+    req.body;
+
+  const updatedGalleryImages = {
+    g_image1,
+    g_image2,
+    g_image3,
+    g_image4,
+    g_image5,
+    g_image6,
+  };
+
+  try {
+    const existingUser = await knex("user").where({ id: req.user.id }).first();
+
+    if (!existingUser) {
+      return res.status(404).send("User not found");
+    }
+
+    const existingProfile = await knex("profile")
+      .where({ user_id: req.user.id })
+      .first();
+
+    if (!existingProfile) {
+      return res.status(404).send("Profile not found");
+    }
+
+    const updatedRowCount = await knex("gallery")
+      .where({ profile_id: existingProfile.id })
+      .update(updatedGalleryImages);
+
+    if (updatedRowCount === 0) {
+      updatedGalleryImages.profile_id = existingProfile.id;
+      await knex("gallery").insert(updatedGalleryImages);
+    }
+
+    res.status(200).send("Gallery  updated successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Unable to update Gallery");
+  }
+};
+
+const updateTheme = async (req, res) => {
+  const { style, color, font } = req.body;
+
+  const updatedTheme = {
+    style,
+    color,
+    font,
+  };
+
+  try {
+    const existingUser = await knex("user").where({ id: req.user.id }).first();
+
+    if (!existingUser) {
+      return res.status(404).send("User not found");
+    }
+
+    const existingProfile = await knex("profile")
+      .where({ user_id: req.user.id })
+      .first();
+
+    if (!existingProfile) {
+      return res.status(404).send("Profile not found");
+    }
+
+    const updatedRowCount = await knex("theme")
+      .where({ profile_id: existingProfile.id })
+      .update(updatedTheme);
+
+    if (updatedRowCount === 0) {
+      updatedTheme.profile_id = existingProfile.id;
+      await knex("theme").insert(updatedTheme);
+    }
+
+    res.status(200).send("Theme  updated successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Unable to update Theme");
   }
 };
 
@@ -697,6 +996,12 @@ module.exports = {
   getProfileEdit,
   setupBasic,
   updateBasic,
+  updateImages,
+  updateSocials,
+  updateExternalLinks,
+  updateImageCards,
+  updateGallery,
+  updateTheme,
   getBasicData,
   setupImages,
   setupSocial,
