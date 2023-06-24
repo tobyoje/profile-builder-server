@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user-controller");
 const authenticate = require("../middleware/authenticate");
+const multer = require("multer");
+const upload = multer({ dest: "public-images/" });
+const fs = require("fs");
 
 router.route("/").get(userController.index);
 
@@ -16,7 +19,7 @@ router
   .route("/setup")
   .post(authenticate, userController.setupBasic)
   .get(userController.getBasicData)
-  .put(authenticate, userController.setupImages);
+  .put(authenticate, upload.single("image"), userController.setupImages);
 
 router
   .route("/:pageLink")
@@ -25,35 +28,44 @@ router
 
 router
   .route("/profileimage/:pageLink")
-  .put(authenticate, userController.updateImages);
+  .put(authenticate, upload.single("image"), userController.updateImages);
 
-
-  router
+router
   .route("/socials/:pageLink")
   .put(authenticate, userController.updateSocials);
 
-
-  router
+router
   .route("/external-links/:pageLink")
   .put(authenticate, userController.updateExternalLinks);
 
-  router
-  .route("/image-cards/:pageLink")
-  .put(authenticate, userController.updateImageCards);
+router.route("/image-cards/:pageLink").put(
+  authenticate,
+  upload.fields([
+    {
+      name: "image1",
+      maxCount: 1,
+    },
+    {
+      name: "image2",
+      maxCount: 1,
+    },
+    {
+      name: "image3",
+      maxCount: 1,
+    },
+    {
+      name: "image4",
+      maxCount: 1,
+    },
+  ]),
+  userController.updateImageCards
+);
 
-  router
+router
   .route("/gallery/:pageLink")
   .put(authenticate, userController.updateGallery);
 
-
-  router
-  .route("/theme/:pageLink")
-  .put(authenticate, userController.updateTheme);
-
-
-
-
-
+router.route("/theme/:pageLink").put(authenticate, userController.updateTheme);
 
 router
   .route("/edit/:pageLink")
@@ -63,7 +75,28 @@ router.route("/socials").post(authenticate, userController.setupSocial);
 // .put(authenticate, userController.setupImages);
 
 router.route("/links").post(authenticate, userController.setupLinks);
-router.route("/imagecards").post(authenticate, userController.setupImageCards);
+router.route("/imagecards").post(
+  authenticate,
+  upload.fields([
+    {
+      name: "image1",
+      maxCount: 1,
+    },
+    {
+      name: "image2",
+      maxCount: 1,
+    },
+    {
+      name: "image3",
+      maxCount: 1,
+    },
+    {
+      name: "image4",
+      maxCount: 1,
+    },
+  ]),
+  userController.setupImageCards
+);
 router.route("/gallery").post(authenticate, userController.setupGalleryImages);
 router.route("/theme").post(authenticate, userController.setupTheme);
 

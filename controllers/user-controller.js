@@ -1,7 +1,9 @@
 const knex = require("knex")(require("../knexfile"));
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const authenticate = require("../middleware/authenticate");
+const multer = require("multer");
+const upload = multer({ dest: "public-images/" });
+const fs = require("fs");
 
 //  request to get all users
 const index = (req, res) => {
@@ -371,15 +373,10 @@ const updateBasic = async (req, res) => {
 
 const updateImages = async (req, res) => {
   // Grab the data that's been posted
-  const { profile_image, hero_image } = req.body;
+  const profile_image = req.file.filename;
+  const hero_image = req.body.hero_image;
 
-  if (!profile_image || !hero_image) {
-    return res
-      .status(400)
-      .send("Please provide required information in the request");
-  }
-
-  const newBasicInfo = {
+  const updateInfo = {
     profile_image,
     hero_image,
   };
@@ -396,12 +393,10 @@ const updateImages = async (req, res) => {
       .first();
 
     if (existingProfile) {
-      await knex("profile")
-        .where({ user_id: req.user.id })
-        .update(newBasicInfo);
+      await knex("profile").where({ user_id: req.user.id }).update(updateInfo);
     } else {
-      newBasicInfo.user_id = req.user.id;
-      await knex("profile").insert(newBasicInfo);
+      updateInfo.user_id = req.user.id;
+      await knex("profile").insert(updateInfo);
     }
 
     res.status(200).send("Basic Info updated successfully");
@@ -511,47 +506,63 @@ const updateExternalLinks = async (req, res) => {
 };
 
 const updateImageCards = async (req, res) => {
-  const {
-    ic_link1,
-    ic_title1,
-    ic_image1,
-    ic_link2,
-    ic_title2,
-    ic_image2,
-    ic_link3,
-    ic_title3,
-    ic_image3,
-    ic_link4,
-    ic_title4,
-    ic_image4,
-    ic_link5,
-    ic_title5,
-    ic_image5,
-    ic_link6,
-    ic_title6,
-    ic_image6,
-  } = req.body;
+  const ic_link1 = req.body.ic_link1;
+  const ic_title1 = req.body.ic_title1;
+  const ic_image1 =
+    req.files && req.files.image1 && req.files.image1[0]
+      ? req.files.image1[0].filename
+      : undefined;
+  const ic_link2 = req.body.ic_link2;
+  const ic_title2 = req.body.ic_title2;
+  const ic_image2 =
+    req.files.image2 && req.files.image2[0]
+      ? req.files.image2[0].filename
+      : undefined;
+  const ic_link3 = req.body.ic_link3;
+  const ic_title3 = req.body.ic_title3;
+  const ic_image3 =
+    req.files.image3 && req.files.image3[0]
+      ? req.files.image3[0].filename
+      : undefined;
+  const ic_link4 = req.body.ic_link4;
+  const ic_title4 = req.body.ic_title4;
+  const ic_image4 =
+    req.files.image4 && req.files.image4[0]
+      ? req.files.image4[0].filename
+      : undefined;
+
+  console.log(req.files);
 
   const updatedImageCards = {
     ic_link1,
     ic_title1,
-    ic_image1,
     ic_link2,
     ic_title2,
-    ic_image2,
     ic_link3,
     ic_title3,
-    ic_image3,
     ic_link4,
     ic_title4,
-    ic_image4,
-    ic_link5,
-    ic_title5,
-    ic_image5,
-    ic_link6,
-    ic_title6,
-    ic_image6,
   };
+
+  // Add ic_image1 property to updatedImageCards only if it exists
+  if (ic_image1) {
+    updatedImageCards.ic_image1 = ic_image1;
+  }
+
+  // Add ic_image2 property to updatedImageCards only if it exists
+  if (ic_image2) {
+    updatedImageCards.ic_image2 = ic_image2;
+  }
+
+  // Add ic_image3 property to updatedImageCards only if it exists
+  if (ic_image3) {
+    updatedImageCards.ic_image3 = ic_image3;
+  }
+
+  // Add ic_image4 property to updatedImageCards only if it exists
+  if (ic_image4) {
+    updatedImageCards.ic_image4 = ic_image4;
+  }
 
   try {
     const existingUser = await knex("user").where({ id: req.user.id }).first();
@@ -577,7 +588,7 @@ const updateImageCards = async (req, res) => {
       await knex("imagecards").insert(updatedImageCards);
     }
 
-    res.status(200).send("Image Cards  updated successfully");
+    res.status(200).send("Image Cards updated successfully");
   } catch (error) {
     console.error(error);
     res.status(500).send("Unable to update Image Cards");
@@ -679,7 +690,10 @@ const getBasicData = (req, res) => {
 const setupImages = async (req, res) => {
   try {
     // Grab the data that's been posted
-    const { profile_image, hero_image } = req.body;
+    // const { profile_image, hero_image } = req.body;
+
+    const profile_image = req.file.filename;
+    const hero_image = req.body.hero_image;
 
     // if (!profile_image || !hero_image) {
     //   return res
@@ -691,6 +705,8 @@ const setupImages = async (req, res) => {
       profile_image,
       hero_image,
     };
+
+    console.log(req.file);
 
     const existingUser = await knex("user").where({ id: req.user.id }).first();
 
@@ -708,7 +724,6 @@ const setupImages = async (req, res) => {
 
     await knex("profile").where({ user_id: req.user.id }).update(updateInfo);
 
-    console.log("hey");
     res.status(200).send("Photos updated successfully");
   } catch (error) {
     console.log(error);
@@ -813,26 +828,19 @@ const setupLinks = async (req, res) => {
 
 const setupImageCards = async (req, res) => {
   try {
-    const {
-      ic_link1,
-      ic_title1,
-      ic_image1,
-      ic_link2,
-      ic_title2,
-      ic_image2,
-      ic_link3,
-      ic_title3,
-      ic_image3,
-      ic_link4,
-      ic_title4,
-      ic_image4,
-      ic_link5,
-      ic_title5,
-      ic_image5,
-      ic_link6,
-      ic_title6,
-      ic_image6,
-    } = req.body;
+    const ic_link1 = req.body.ic_link1;
+    const ic_title1 = req.body.ic_title1;
+    const ic_image1 = req.files.image1[0].filename;
+    const ic_link2 = req.body.ic_link2;
+    const ic_title2 = req.body.ic_title2;
+    const ic_image2 = req.files.image2[0].filename;
+    const ic_link3 = req.body.ic_link3;
+    const ic_title3 = req.body.ic_title3;
+    const ic_image3 = req.files.image3[0].filename;
+    const ic_link4 = req.body.ic_link4;
+    const ic_title4 = req.body.ic_title4;
+    const ic_image4 = req.files.image4[0].filename;
+
     console.log(req.body);
 
     const existingUser = await knex("user").where({ id: req.user.id }).first();
@@ -864,12 +872,6 @@ const setupImageCards = async (req, res) => {
       ic_link4,
       ic_title4,
       ic_image4,
-      ic_link5,
-      ic_title5,
-      ic_image5,
-      ic_link6,
-      ic_title6,
-      ic_image6,
       profile_id: existingProfile.id,
     };
 
