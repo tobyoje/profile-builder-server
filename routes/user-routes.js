@@ -61,9 +61,36 @@ router.route("/image-cards/:pageLink").put(
   userController.updateImageCards
 );
 
-router
-  .route("/gallery/:pageLink")
-  .put(authenticate, userController.updateGallery);
+router.route("/gallery/:pageLink").put(
+  authenticate,
+  upload.fields([
+    {
+      name: "image1",
+      maxCount: 1,
+    },
+    {
+      name: "image2",
+      maxCount: 1,
+    },
+    {
+      name: "image3",
+      maxCount: 1,
+    },
+    {
+      name: "image4",
+      maxCount: 1,
+    },
+    {
+      name: "image5",
+      maxCount: 1,
+    },
+    {
+      name: "image6",
+      maxCount: 1,
+    },
+  ]),
+  userController.updateGallery
+);
 
 router.route("/theme/:pageLink").put(authenticate, userController.updateTheme);
 
@@ -97,7 +124,36 @@ router.route("/imagecards").post(
   ]),
   userController.setupImageCards
 );
-router.route("/gallery").post(authenticate, userController.setupGalleryImages);
+router.route("/gallery").post(
+  authenticate,
+  upload.fields([
+    {
+      name: "image1",
+      maxCount: 1,
+    },
+    {
+      name: "image2",
+      maxCount: 1,
+    },
+    {
+      name: "image3",
+      maxCount: 1,
+    },
+    {
+      name: "image4",
+      maxCount: 1,
+    },
+    {
+      name: "image5",
+      maxCount: 1,
+    },
+    {
+      name: "image6",
+      maxCount: 1,
+    },
+  ]),
+  userController.setupGalleryImages
+);
 router.route("/theme").post(authenticate, userController.setupTheme);
 
 router.route("/image-upload").post(authenticate, userController.imageUpload);

@@ -373,13 +373,19 @@ const updateBasic = async (req, res) => {
 
 const updateImages = async (req, res) => {
   // Grab the data that's been posted
-  const profile_image = req.file.filename;
+  const profile_image =
+    req.file && req.file.filename ? req.file.filename : undefined;
   const hero_image = req.body.hero_image;
 
   const updateInfo = {
-    profile_image,
     hero_image,
   };
+
+  // Add profile_image property to updatedImageCards only if it exists
+  if (profile_image) {
+    updateInfo.profile_image = profile_image;
+  }
+
   try {
     const existingUser = await knex("user").where({ id: req.user.id }).first();
     console.log(req.user);
@@ -596,17 +602,64 @@ const updateImageCards = async (req, res) => {
 };
 
 const updateGallery = async (req, res) => {
-  const { g_image1, g_image2, g_image3, g_image4, g_image5, g_image6 } =
-    req.body;
+  const g_image1 =
+    req.files && req.files.image1 && req.files.image1[0]
+      ? req.files.image1[0].filename
+      : undefined;
+  const g_image2 =
+    req.files && req.files.image2 && req.files.image2[0]
+      ? req.files.image2[0].filename
+      : undefined;
+  const g_image3 =
+    req.files && req.files.image3 && req.files.image3[0]
+      ? req.files.image3[0].filename
+      : undefined;
+  const g_image4 =
+    req.files && req.files.image4 && req.files.image4[0]
+      ? req.files.image4[0].filename
+      : undefined;
+  const g_image5 =
+    req.files && req.files.image5 && req.files.image5[0]
+      ? req.files.image5[0].filename
+      : undefined;
+  const g_image6 =
+    req.files && req.files.image6 && req.files.image6[0]
+      ? req.files.image6[0].filename
+      : undefined;
 
-  const updatedGalleryImages = {
-    g_image1,
-    g_image2,
-    g_image3,
-    g_image4,
-    g_image5,
-    g_image6,
-  };
+  console.log(req.files);
+
+  const updatedGalleryImages = {};
+
+  // Add g_image1 property to updatedGalleryImages only if it exists
+  if (g_image1) {
+    updatedGalleryImages.g_image1 = g_image1;
+  }
+
+  // Add g_image2 property to updatedGalleryImages only if it exists
+  if (g_image2) {
+    updatedGalleryImages.g_image2 = g_image2;
+  }
+
+  // Add g_image3 property to updatedGalleryImages only if it exists
+  if (g_image3) {
+    updatedGalleryImages.g_image3 = g_image3;
+  }
+
+  // Add g_image4 property to updatedGalleryImages only if it exists
+  if (g_image4) {
+    updatedGalleryImages.g_image4 = g_image4;
+  }
+
+  // Add g_image5 property to updatedGalleryImages only if it exists
+  if (g_image5) {
+    updatedGalleryImages.g_image5 = g_image5;
+  }
+
+  // Add g_image6 property to updatedGalleryImages only if it exists
+  if (g_image6) {
+    updatedGalleryImages.g_image6 = g_image6;
+  }
 
   try {
     const existingUser = await knex("user").where({ id: req.user.id }).first();
@@ -623,16 +676,20 @@ const updateGallery = async (req, res) => {
       return res.status(404).send("Profile not found");
     }
 
-    const updatedRowCount = await knex("gallery")
-      .where({ profile_id: existingProfile.id })
-      .update(updatedGalleryImages);
+    const isEmpty = Object.keys(updatedGalleryImages).length === 0;
 
-    if (updatedRowCount === 0) {
-      updatedGalleryImages.profile_id = existingProfile.id;
-      await knex("gallery").insert(updatedGalleryImages);
+    if (!isEmpty) {
+      const updatedRowCount = await knex("gallery")
+        .where({ profile_id: existingProfile.id })
+        .update(updatedGalleryImages);
+
+      if (updatedRowCount === 0) {
+        updatedGalleryImages.profile_id = existingProfile.id;
+        await knex("gallery").insert(updatedGalleryImages);
+      }
     }
 
-    res.status(200).send("Gallery  updated successfully");
+    res.status(200).send("Gallery updated successfully");
   } catch (error) {
     console.error(error);
     res.status(500).send("Unable to update Gallery");
@@ -830,18 +887,61 @@ const setupImageCards = async (req, res) => {
   try {
     const ic_link1 = req.body.ic_link1;
     const ic_title1 = req.body.ic_title1;
-    const ic_image1 = req.files.image1[0].filename;
+    const ic_image1 =
+      req.files && req.files.image1 && req.files.image1[0]
+        ? req.files.image1[0].filename
+        : undefined;
     const ic_link2 = req.body.ic_link2;
     const ic_title2 = req.body.ic_title2;
-    const ic_image2 = req.files.image2[0].filename;
+    const ic_image2 =
+      req.files.image2 && req.files.image2[0]
+        ? req.files.image2[0].filename
+        : undefined;
     const ic_link3 = req.body.ic_link3;
     const ic_title3 = req.body.ic_title3;
-    const ic_image3 = req.files.image3[0].filename;
+    const ic_image3 =
+      req.files.image3 && req.files.image3[0]
+        ? req.files.image3[0].filename
+        : undefined;
     const ic_link4 = req.body.ic_link4;
     const ic_title4 = req.body.ic_title4;
-    const ic_image4 = req.files.image4[0].filename;
+    const ic_image4 =
+      req.files.image4 && req.files.image4[0]
+        ? req.files.image4[0].filename
+        : undefined;
 
-    console.log(req.body);
+    console.log(req.files);
+
+    const updatedImageCards = {
+      ic_link1,
+      ic_title1,
+      ic_link2,
+      ic_title2,
+      ic_link3,
+      ic_title3,
+      ic_link4,
+      ic_title4,
+    };
+
+    // Add ic_image1 property to updatedImageCards only if it exists
+    if (ic_image1) {
+      updatedImageCards.ic_image1 = ic_image1;
+    }
+
+    // Add ic_image2 property to updatedImageCards only if it exists
+    if (ic_image2) {
+      updatedImageCards.ic_image2 = ic_image2;
+    }
+
+    // Add ic_image3 property to updatedImageCards only if it exists
+    if (ic_image3) {
+      updatedImageCards.ic_image3 = ic_image3;
+    }
+
+    // Add ic_image4 property to updatedImageCards only if it exists
+    if (ic_image4) {
+      updatedImageCards.ic_image4 = ic_image4;
+    }
 
     const existingUser = await knex("user").where({ id: req.user.id }).first();
 
@@ -887,9 +987,65 @@ const setupImageCards = async (req, res) => {
 
 const setupGalleryImages = async (req, res) => {
   try {
-    const { g_image1, g_image2, g_image3, g_image4, g_image5, g_image6 } =
-      req.body;
-    console.log(req.body);
+    const g_image1 =
+      req.files && req.files.image1 && req.files.image1[0]
+        ? req.files.image1[0].filename
+        : undefined;
+    const g_image2 =
+      req.files.image2 && req.files.image2[0]
+        ? req.files.image2[0].filename
+        : undefined;
+    const g_image3 =
+      req.files.image3 && req.files.image3[0]
+        ? req.files.image3[0].filename
+        : undefined;
+    const g_image4 =
+      req.files.image4 && req.files.image4[0]
+        ? req.files.image4[0].filename
+        : undefined;
+
+    const g_image5 =
+      req.files.image5 && req.files.image5[0]
+        ? req.files.image5[0].filename
+        : undefined;
+    const g_image6 =
+      req.files.image6 && req.files.image6[0]
+        ? req.files.image6[0].filename
+        : undefined;
+
+    console.log(req.files);
+
+    const updatedGalleryImages = {};
+
+    // Add g_image1 property to updatedGalleryImages only if it exists
+    if (g_image1) {
+      updatedGalleryImages.g_image1 = g_image1;
+    }
+
+    // Add g_image2 property to updatedGalleryImages only if it exists
+    if (g_image2) {
+      updatedGalleryImages.g_image2 = g_image2;
+    }
+
+    // Add g_image3 property to updatedGalleryImages only if it exists
+    if (g_image3) {
+      updatedGalleryImages.g_image3 = g_image3;
+    }
+
+    // Add g_image4 property to updatedGalleryImages only if it exists
+    if (g_image4) {
+      updatedGalleryImages.g_image4 = g_image4;
+    }
+
+    // Add g_image5 property to updatedGalleryImages only if it exists
+    if (g_image5) {
+      updatedGalleryImages.g_image4 = g_image4;
+    }
+
+    // Add g_image46 property to updatedGalleryImages only if it exists
+    if (g_image6) {
+      updatedGalleryImages.g_image6 = g_image6;
+    }
 
     const existingUser = await knex("user").where({ id: req.user.id }).first();
 
