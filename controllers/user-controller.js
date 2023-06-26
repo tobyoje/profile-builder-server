@@ -5,7 +5,6 @@ const multer = require("multer");
 const upload = multer({ dest: "public-images/" });
 const fs = require("fs");
 
-//  request to get all users
 const index = (req, res) => {
   knex("user")
     .then((data) => {
@@ -14,9 +13,7 @@ const index = (req, res) => {
     .catch((err) => res.status(400).send(`Error retrieving users: ${err}`));
 };
 
-// Post request to create user
 const create = async (req, res) => {
-  // Grab the data that's been posted
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -37,7 +34,6 @@ const create = async (req, res) => {
     password: hashedPassword,
   };
 
-  // Insert it into the database
   try {
     await knex("user").insert(newUser);
     res.status(201).send("Registered successfully");
@@ -47,10 +43,6 @@ const create = async (req, res) => {
   }
 };
 
-// ## POST /api/users/login
-// -   Generates and responds a JWT for the user to use for future authorization.
-// -   Expected body: { email, password }
-// -   Response format: { token: "JWT_TOKEN_HERE" }
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -58,7 +50,6 @@ const login = async (req, res) => {
     return res.status(400).send("Please enter the required fields");
   }
 
-  // Find the user
   const userAndProfile = await knex("user")
     .where({ email })
     .join("profile", "profile.user_id", "user.id")
@@ -70,13 +61,11 @@ const login = async (req, res) => {
     return res.status(400).send("Invalid email");
   }
 
-  // Validate the password
   const isPasswordCorrect = bcrypt.compareSync(password, user.password);
   if (!isPasswordCorrect) {
     return res.status(400).send("Invalid password");
   }
 
-  // Generate a token
   const token = jwt.sign(
     { id: user.id, email: user.email },
     process.env.JWT_KEY,
@@ -100,19 +89,12 @@ const login = async (req, res) => {
   }
 };
 
-// ## GET /api/user/current
-// -   Gets information about the currently logged in user.
-// -   Expects valid JWT authentication to run through the "authenticate" middleware
 const findUser = async (req, res) => {
   console.log(req.body);
-  // Respond with the appropriate user data
-  // (because we're using "authorize" middleware, we have req.user)
   const user = await knex("user").where({ id: req.user.id }).first();
-  // delete user.password;
   res.json(user);
 };
 
-//Get Profile by pageLink Params
 const getProfile = (req, res) => {
   knex("profile")
     .join("theme", "theme.profile_id", "profile.id")
@@ -195,8 +177,6 @@ const getProfile = (req, res) => {
       res.status(500).json({ message: "Internal server error." });
     });
 };
-
-//Get request for edit
 
 const getProfileEdit = (req, res) => {
   knex("profile")
@@ -281,11 +261,7 @@ const getProfileEdit = (req, res) => {
     });
 };
 
-// ## POST /api/user/setup
-// -   Gets information about the currently logged in user.
-// -   Expects valid JWT authentication to run through the "authenticate" middleware
 const setupBasic = async (req, res) => {
-  // Grab the data that's been posted
   const { page_title, full_name, page_link, biography } = req.body;
 
   if (!page_title || !full_name || !page_link || !biography) {
@@ -328,7 +304,6 @@ const setupBasic = async (req, res) => {
 };
 
 const updateBasic = async (req, res) => {
-  // Grab the data that's been posted
   const { page_title, full_name, page_link, biography } = req.body;
 
   if (!page_title || !full_name || !page_link || !biography) {
@@ -372,7 +347,6 @@ const updateBasic = async (req, res) => {
 };
 
 const updateImages = async (req, res) => {
-  // Grab the data that's been posted
   const profile_image =
     req.file && req.file.filename ? req.file.filename : undefined;
   const hero_image = req.body.hero_image;
@@ -381,7 +355,6 @@ const updateImages = async (req, res) => {
     hero_image,
   };
 
-  // Add profile_image property to updatedImageCards only if it exists
   if (profile_image) {
     updateInfo.profile_image = profile_image;
   }
@@ -550,22 +523,18 @@ const updateImageCards = async (req, res) => {
     ic_title4,
   };
 
-  // Add ic_image1 property to updatedImageCards only if it exists
   if (ic_image1) {
     updatedImageCards.ic_image1 = ic_image1;
   }
 
-  // Add ic_image2 property to updatedImageCards only if it exists
   if (ic_image2) {
     updatedImageCards.ic_image2 = ic_image2;
   }
 
-  // Add ic_image3 property to updatedImageCards only if it exists
   if (ic_image3) {
     updatedImageCards.ic_image3 = ic_image3;
   }
 
-  // Add ic_image4 property to updatedImageCards only if it exists
   if (ic_image4) {
     updatedImageCards.ic_image4 = ic_image4;
   }
@@ -631,32 +600,26 @@ const updateGallery = async (req, res) => {
 
   const updatedGalleryImages = {};
 
-  // Add g_image1 property to updatedGalleryImages only if it exists
   if (g_image1) {
     updatedGalleryImages.g_image1 = g_image1;
   }
 
-  // Add g_image2 property to updatedGalleryImages only if it exists
   if (g_image2) {
     updatedGalleryImages.g_image2 = g_image2;
   }
 
-  // Add g_image3 property to updatedGalleryImages only if it exists
   if (g_image3) {
     updatedGalleryImages.g_image3 = g_image3;
   }
 
-  // Add g_image4 property to updatedGalleryImages only if it exists
   if (g_image4) {
     updatedGalleryImages.g_image4 = g_image4;
   }
 
-  // Add g_image5 property to updatedGalleryImages only if it exists
   if (g_image5) {
     updatedGalleryImages.g_image5 = g_image5;
   }
 
-  // Add g_image6 property to updatedGalleryImages only if it exists
   if (g_image6) {
     updatedGalleryImages.g_image6 = g_image6;
   }
@@ -746,17 +709,8 @@ const getBasicData = (req, res) => {
 
 const setupImages = async (req, res) => {
   try {
-    // Grab the data that's been posted
-    // const { profile_image, hero_image } = req.body;
-
     const profile_image = req.file.filename;
     const hero_image = req.body.hero_image;
-
-    // if (!profile_image || !hero_image) {
-    //   return res
-    //     .status(400)
-    //     .send("Please provide required information in the request");
-    // }
 
     const updateInfo = {
       profile_image,
@@ -804,10 +758,6 @@ const setupSocial = async (req, res) => {
       .where({ user_id: req.user.id })
       .first();
 
-    // if (existingProfile) {
-    //   return res.status(409).send("Profile already exists for this user");
-    // }
-
     console.log(existingProfile);
 
     const newSocialInfo = {
@@ -854,10 +804,6 @@ const setupLinks = async (req, res) => {
     const existingProfile = await knex("profile")
       .where({ user_id: req.user.id })
       .first();
-
-    // if (existingProfile) {
-    //   return res.status(409).send("Profile already exists for this user");
-    // }
 
     console.log(existingProfile);
 
@@ -923,22 +869,18 @@ const setupImageCards = async (req, res) => {
       ic_title4,
     };
 
-    // Add ic_image1 property to updatedImageCards only if it exists
     if (ic_image1) {
       updatedImageCards.ic_image1 = ic_image1;
     }
 
-    // Add ic_image2 property to updatedImageCards only if it exists
     if (ic_image2) {
       updatedImageCards.ic_image2 = ic_image2;
     }
 
-    // Add ic_image3 property to updatedImageCards only if it exists
     if (ic_image3) {
       updatedImageCards.ic_image3 = ic_image3;
     }
 
-    // Add ic_image4 property to updatedImageCards only if it exists
     if (ic_image4) {
       updatedImageCards.ic_image4 = ic_image4;
     }
@@ -952,10 +894,6 @@ const setupImageCards = async (req, res) => {
     const existingProfile = await knex("profile")
       .where({ user_id: req.user.id })
       .first();
-
-    // if (existingProfile) {
-    //   return res.status(409).send("Profile already exists for this user");
-    // }
 
     console.log(existingProfile);
 
@@ -1017,32 +955,26 @@ const setupGalleryImages = async (req, res) => {
 
     const updatedGalleryImages = {};
 
-    // Add g_image1 property to updatedGalleryImages only if it exists
     if (g_image1) {
       updatedGalleryImages.g_image1 = g_image1;
     }
 
-    // Add g_image2 property to updatedGalleryImages only if it exists
     if (g_image2) {
       updatedGalleryImages.g_image2 = g_image2;
     }
 
-    // Add g_image3 property to updatedGalleryImages only if it exists
     if (g_image3) {
       updatedGalleryImages.g_image3 = g_image3;
     }
 
-    // Add g_image4 property to updatedGalleryImages only if it exists
     if (g_image4) {
       updatedGalleryImages.g_image4 = g_image4;
     }
 
-    // Add g_image5 property to updatedGalleryImages only if it exists
     if (g_image5) {
       updatedGalleryImages.g_image4 = g_image4;
     }
 
-    // Add g_image46 property to updatedGalleryImages only if it exists
     if (g_image6) {
       updatedGalleryImages.g_image6 = g_image6;
     }
@@ -1056,10 +988,6 @@ const setupGalleryImages = async (req, res) => {
     const existingProfile = await knex("profile")
       .where({ user_id: req.user.id })
       .first();
-
-    // if (existingProfile) {
-    //   return res.status(409).send("Profile already exists for this user");
-    // }
 
     console.log(existingProfile);
 
@@ -1098,10 +1026,6 @@ const setupTheme = async (req, res) => {
       .where({ user_id: req.user.id })
       .first();
 
-    // if (existingProfile) {
-    //   return res.status(409).send("Profile already exists for this user");
-    // }
-
     console.log(existingProfile);
 
     const newTheme = {
@@ -1119,30 +1043,6 @@ const setupTheme = async (req, res) => {
     console.error(error);
     res.status(500).send("Unable to add Theme for the user");
   }
-};
-
-const imageUpload = async (req, res) => {
-  // try {
-  //   console.log(req.files);
-  //   let profileImage;
-  //   let heroImage;
-  //   let uploadPath;
-  //   if (!req.files || Object.keys(req.files).length === 0) {
-  //     return res.status(400).send("No files were uploaded.");
-  //   }
-  //   // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-  //   profileImage = req.files.profile_image;
-  //   heroImage = req.files.hero_image;
-  //   uploadPath = __dirname + "/files/" + profileImage.name;
-  //   // Use the mv() method to place the file somewhere on your server
-  //   profileImage.mv(uploadPath, function (err) {
-  //     if (err) return res.status(500).send(err);
-  //     res.send("File uploaded!");
-  //   });
-  // } catch (error) {
-  //   console.error(error);
-  //   res.status(500).send("Unable to add Theme for the user");
-  // }
 };
 
 module.exports = {
@@ -1167,5 +1067,4 @@ module.exports = {
   setupImageCards,
   setupGalleryImages,
   setupTheme,
-  imageUpload,
 };

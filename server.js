@@ -16,20 +16,6 @@ const PORT = process.env.PORT;
 const usersRoutes = require("./routes/user-routes");
 app.use("/api/user", usersRoutes);
 
-// const profileRoutes = require("./routes/profile-routes");
-// app.use("/profile", profileRoutes);
-
-// //TEst for image upload
-// app.post("/api/upload", upload.single("image"), (req, res) => {
-//   // 4
-//   const imageName = req.file.filename;
-//   const description = req.body.description;
-
-//   // Save this data to a database probably
-
-//   console.log(description, imageName);
-//   res.send({ description, imageName });
-// });
 
 app.get("/public-images/:imageName", (req, res) => {
   const imageName = req.params.imageName;
@@ -37,7 +23,6 @@ app.get("/public-images/:imageName", (req, res) => {
   readStream.pipe(res);
 });
 
-// // Test ends here
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT} `);

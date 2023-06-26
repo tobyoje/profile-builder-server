@@ -8,10 +8,6 @@ const fs = require("fs");
 
 router.route("/").get(userController.index);
 
-// router.route("/:id").get(userController.findUser);
-//   .patch(userController.update)
-//   .delete(userController.remove);
-
 router.route("/register").post(userController.create);
 router.route("/login").post(userController.login);
 router.route("/current").get(authenticate, userController.findUser);
@@ -155,7 +151,5 @@ router.route("/gallery").post(
   userController.setupGalleryImages
 );
 router.route("/theme").post(authenticate, userController.setupTheme);
-
-router.route("/image-upload").post(authenticate, userController.imageUpload);
 
 module.exports = router;
