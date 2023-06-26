@@ -39,7 +39,7 @@ module.exports = [
     page_link: "my-link4",
     biography:
       "I'm a food enthusiast, recipe developer, and cookbook author. From a young age, I've had a passion for cooking and exploring different flavors. My culinary journey began in my grandmother's kitchen, where I learned traditional family recipes passed down through generations.",
-    profile_image: "http://localhost:8080/images/profile-image.jpg",
+    profile_image: "defaults/profile-default1",
     hero_image: "http://localhost:8080/images/hero-4.jpg",
     user_id: "4",
   },
@@ -50,7 +50,7 @@ module.exports = [
     page_link: "my-link5",
     biography:
       "I'm a tech entrepreneur, passionate about innovation and disruptive technologies. Throughout my career, I have been at the forefront of driving digital transformation and building groundbreaking products.",
-    profile_image: "http://localhost:8080/images/profile-image.jpg",
+    profile_image: "defaults/profile-default1",
     hero_image: "http://localhost:8080/images/hero-5.jpg",
     user_id: "5",
   },
